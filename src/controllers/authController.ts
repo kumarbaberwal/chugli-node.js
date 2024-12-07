@@ -14,7 +14,8 @@ export const register = async (req: Request, res: Response) => {
     try {
         const result = await pool.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [username, email, hashedPassword]);
         const user = result.rows[0];
-        res.status(201).json({ user });
+        const token = Jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15d" });
+        res.status(201).json({ user: { ...user, token } });
     }
     catch (error) {
         console.error(error);
@@ -39,7 +40,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
             });
         }
         const token = Jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15d" });
-        res.status(201).json({ message: "User Login Sucessfully", user, token });
+        res.status(201).json({ user: {...user, token} });
     }
     catch (error) {
         console.error(error);

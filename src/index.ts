@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import {json} from 'body-parser';
 import authRouter from './routes/authRoutes';
+import conversationsRouter from './routes/conversationRoutes';
 
 
 const app = express();
@@ -12,6 +13,7 @@ app.get('/', (req: Request, res: Response)=>{
 });
 
 app.use('/auth', authRouter);
+app.use('/conversations', conversationsRouter);
 
 const PORT = process.env.PORT || 3000;
 
