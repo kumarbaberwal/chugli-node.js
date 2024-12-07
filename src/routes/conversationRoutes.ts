@@ -7,7 +7,7 @@ const router = Router();
 router.get('/', veryfyToken, async(req: Request, res: Response) => {
     let userId = null;
     if(req.user){
-        userId = req.user.id;
+        userId = req.user.userId;
     }
 
     try{
@@ -23,7 +23,7 @@ router.get('/', veryfyToken, async(req: Request, res: Response) => {
                 limit 1
             ) m on true
              where c.participant_one = $1 or c.participant_two = $1
-             order by m.created_at desc
+             order by m.created_at desc;
             `,
             [userId]
         );
