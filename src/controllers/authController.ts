@@ -8,10 +8,14 @@ const SALT_ROUNDS = 10;
 const JWT_SECRET = process.env.JWT_SECRET || 'secretchugli';
 
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response): Promise<any> => {
     const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     try {
+        const isAlreadyUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if(isAlreadyUser.rows.length > 0) {
+            return res.status(400).json({ error: "User already exists" });
+        }
         const result = await pool.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [username, email, hashedPassword]);
         const user = result.rows[0];
         const token = Jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "15d" });
